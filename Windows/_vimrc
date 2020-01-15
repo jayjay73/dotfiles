@@ -1,4 +1,6 @@
 " Jan's vimrc
+"
+" vim: set foldmethod=marker:
 
 " source system wide vimrc
 if filereadable("/etc/vimrc")
@@ -7,6 +9,13 @@ endif
 if filereadable("/usr/local/etc/vim/vimrc")
     source /usr/local/etc/vim/vimrc
 endif
+"" Windows
+"if filereadable("$VIMRUNTIME/../_vimrc")
+"    source $VIMRUNTIME/../_vimrc
+"endif
+
+set langmenu=en_US.UTF-8    " sets the language of the menu (gvim)
+language en_US.UTF-8        " sets the language of the messages / ui (vim)
 
 set nocompatible
 set backspace=indent,eol,start
