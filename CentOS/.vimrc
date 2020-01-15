@@ -1,16 +1,23 @@
 " Jan's vimrc
+"
+" vim: set foldmethod=marker:
 
-" source system wide vimrc
+" Source global configuration files if available
 if filereadable("/etc/vimrc")
     source /etc/vimrc
 endif
+if filereadable("/etc/vim/vimrc.local")
+    source /etc/vim/vimrc.local
+endif
+
+set langmenu=en_US.UTF-8    " sets the language of the menu (gvim)
+language en_US.UTF-8        " sets the language of the messages / ui (vim)
 
 set nocompatible
 if &t_Co > 2 || has("gui_running")
     syntax on
     set hlsearch
 endif
-"set background=dark
 
 if has("autocmd")
     " jump to the last position when reopening a file
@@ -52,8 +59,9 @@ highlight Folded term=standout ctermbg=black ctermfg=white
 highlight Comment term=bold ctermfg=darkblue
 highlight PreProc term=underline cterm=bold ctermfg=lightcyan
 highlight Identifier term=underline cterm=bold ctermfg=lightgreen
+"set background=dark
 
-" help by keyword under cursor
+"{{{ help by keyword under cursor
 function PassWordUnderCursor()
     "if !empty($STY)
     "    " we are in screen
@@ -73,45 +81,46 @@ function PassWordUnderCursor()
     execute "!$HOME/bin/vim-url-router.sh " . shellescape(expand("<cword>"), 1) . " " . shellescape(expand(&filetype)) . " " .shellescape("%")
     redraw!
 endfunction
-
 nnoremap <F1> :silent! :call PassWordUnderCursor()<CR><C-L>
+"}}}
 
-let g:myfiletocommit = ''
-let g:mycommitmessagebuf = ''
-function GitCommitCurrentFileTmpFile()
-    "TODO: check if buffer changed and save or display hint.
-    if &mod
-        write
-    endif
-    if g:myfiletocommit == ''
-        let g:myfiletocommit = expand('%:p')
-        let filechanged = system("git diff --name-only " . g:myfiletocommit)
-        if filechanged != ''
-            let g:mycommitmessagefile = tempname()
-            exec "split " . g:mycommitmessagefile
-            let g:mycommitmessagebuf = bufnr("%")
-        else
-            echo "no changes to commit."
-            let g:myfiletocommit = ''
-        endif
-    else
-        echo "buffer to edit git commit message already open. bufnr: " . g:mycommitmessagebuf
-    endif
-endfunction
-map <F5> :call GitCommitCurrentFileTmpFile() <CR>
-
-function GitCommitCurrentFile()
-    if g:mycommitmessagebuf == bufnr("%")
-        if filereadable(g:mycommitmessagefile)
-            exec "!git add " . g:myfiletocommit
-            exec "!git commit --file " . g:mycommitmessagefile
-            exec "!git pull origin master"
-            exec "!git push origin master"
-        endif
-        let g:myfiletocommit = ''
-        let g:mycommitmessagebuf = ''
-        let g:mycommitmessagefile = ''
-    endif
-endfunction
-
-au BufWinLeave * call GitCommitCurrentFile()
+""{{{ Git commit with hotkey
+"let g:myfiletocommit = ''
+"let g:mycommitmessagebuf = ''
+"function GitCommitCurrentFileTmpFile()
+"    "TODO: check if buffer changed and save or display hint.
+"    if &mod
+"        write
+"    endif
+"    if g:myfiletocommit == ''
+"        let g:myfiletocommit = expand('%:p')
+"        let filechanged = system("git diff --name-only " . g:myfiletocommit)
+"        if filechanged != ''
+"            let g:mycommitmessagefile = tempname()
+"            exec "split " . g:mycommitmessagefile
+"            let g:mycommitmessagebuf = bufnr("%")
+"        else
+"            echo "no changes to commit."
+"            let g:myfiletocommit = ''
+"        endif
+"    else
+"        echo "buffer to edit git commit message already open. bufnr: " . g:mycommitmessagebuf
+"    endif
+"endfunction
+"map <F5> :call GitCommitCurrentFileTmpFile() <CR>
+"
+"function GitCommitCurrentFile()
+"    if g:mycommitmessagebuf == bufnr("%")
+"        if filereadable(g:mycommitmessagefile)
+"            exec "!git add " . g:myfiletocommit
+"            exec "!git commit --file " . g:mycommitmessagefile
+"            exec "!git pull origin master"
+"            exec "!git push origin master"
+"        endif
+"        let g:myfiletocommit = ''
+"        let g:mycommitmessagebuf = ''
+"        let g:mycommitmessagefile = ''
+"    endif
+"endfunction
+"au BufWinLeave * call GitCommitCurrentFile()
+""}}}
