@@ -5,6 +5,9 @@
 
 status_text="vim: ${vim_buffer_file}"
 
+# search engine just short of search string
+#search_engine="https://www.google.com/#q="
+search_engine="https://duckduckgo.com/?q="
 
 # {{{ get vars from command line
 word_under_cursor=$1
@@ -26,15 +29,16 @@ arg5=$5
 (
 
 # {{{ Branching code
-# Default destination: Google
-url="https://www.google.com/#q=${filetype}%20${word_under_cursor}"
+
+# default destination
+url="${search_engine}${filetype}%20${word_under_cursor}"
 
 # Vim
 if [[ "x${filetype}" == "xvim" ]] ; then
     case ${word_under_cursor} in
         # Template:
         #keyword)   url="" ;;
-        *)  url="https://www.google.com/#q=${filetype}%20${word_under_cursor}" ;;
+        *)  url="${search_engine}${filetype}%20${word_under_cursor}" ;;
     esac
 fi
 
@@ -47,9 +51,10 @@ if [[ "x${filetype}" == "xsh" ]] ; then
         'case')   url="http://wiki.bash-hackers.org/syntax/ccmd/case" ;;
         # Template:
         #keyword)   url="" ;;
-        *)  url="https://www.google.com/#q=bash%20${word_under_cursor}" ;;
+        *)  url="${search_engine}bash%20${word_under_cursor}" ;;
     esac
 fi
+
 
 if [[ "x${filetype}" == "xperl" ]] ; then
     case ${word_under_cursor} in
@@ -57,7 +62,7 @@ if [[ "x${filetype}" == "xperl" ]] ; then
         # Template:
         #keyword)   url="" ;;
         #)   url="https://perldoc.perl.org/functions/${word_under_cursor}" ;;
-        #*)  url="https://www.google.com/#q=perl%20${word_under_cursor}" ;;
+        #*)  url="${search_engine}perl%20${word_under_cursor}" ;;
         *)  url="http://perldoc.perl.org/search.html?q=${word_under_cursor}" ;;
     esac
 fi
