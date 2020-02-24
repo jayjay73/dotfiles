@@ -8,6 +8,7 @@ status_text="vim: ${vim_buffer_file}"
 # search engine just short of search string
 #search_engine="https://www.google.com/#q="
 search_engine="https://duckduckgo.com/?q="
+search_engine_lucky="https://duckduckgo.com/?q=%21%20"
 
 # {{{ get vars from command line
 word_under_cursor=$1
@@ -63,7 +64,8 @@ if [[ "x${filetype}" == "xperl" ]] ; then
         #keyword)   url="" ;;
         #)   url="https://perldoc.perl.org/functions/${word_under_cursor}" ;;
         #*)  url="${search_engine}perl%20${word_under_cursor}" ;;
-        *)  url="http://perldoc.perl.org/search.html?q=${word_under_cursor}" ;;
+        #*)  url="http://perldoc.perl.org/search.html?q=${word_under_cursor}" ;;
+        *)  url="${search_engine_lucky}perldoc%20${word_under_cursor}" ;;
     esac
 fi
 # }}}
