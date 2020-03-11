@@ -7,8 +7,8 @@ status_text="vim: ${vim_buffer_file}"
 
 # search engine just short of search string
 #search_engine="https://www.google.com/#q="
-search_engine="https://duckduckgo.com/?q="
-search_engine_lucky="https://duckduckgo.com/?q=%21%20"
+search_engine="https://ddg.gg/?q="
+search_engine_lucky="https://ddg.gg/?q=%21%20"
 
 # {{{ get vars from command line
 word_under_cursor=$1
