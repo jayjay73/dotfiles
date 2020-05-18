@@ -123,4 +123,4 @@ nnoremap <F1> :silent! :call PassWordUnderCursor()<CR><C-L>
 set background=dark
 
 let mojo_highlight_data = 1
-
+au BufNewFile,BufRead Jenkinsfile setf groovy
