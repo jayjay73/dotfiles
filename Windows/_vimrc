@@ -63,6 +63,10 @@ if has("autocmd")
     autocmd BufWinEnter * normal zR
     " load indentation rules and plugins according to the detected filetype.
     filetype plugin indent on
+    " syntax highlighting for TT2 files.
+    autocmd BufNewFile,BufRead *.tt setf tt2
+    " syntax highlighting for Jenkinsfile.
+    au BufNewFile,BufRead Jenkinsfile setf groovy
 endif
 
 " soft tab indentation
@@ -117,10 +121,37 @@ function PassWordUnderCursor()
     execute "!$HOME/bin/vim-url-router.sh " . shellescape(expand("<cword>"), 1) . " " . shellescape(expand(&filetype)) . " " .shellescape("%")
     redraw!
 endfunction
-
 nnoremap <F1> :silent! :call PassWordUnderCursor()<CR><C-L>
+
+" set up menu bar icons and hot keys for TrotoiseGit
+if has("gui_running")
+    if has("gui_win32")
+        function TortoiseCommit()
+            if &mod
+                "echo "Warning: unsaved changes in buffer"
+                echo "saving buffer..."
+                write
+            endif
+
+            let myfiletocommit = expand('%:p')
+            let filechanged = system("git diff --name-only " . myfiletocommit)
+            if filechanged != ''
+                silent !start "C:\Progra~1\TortoiseGit\bin\TortoiseGitProc.exe" /command:commit /path:"%" /notempfile
+            else
+                echo "local file not modified: nothing to do"
+            endif
+        endfunction
+        function TortoiseSync()
+            silent !start "C:\Progra~1\TortoiseGit\bin\TortoiseGitProc.exe" /command:sync /path:"%" /notempfile
+        endfunction
+        nnoremap <F9> :call TortoiseCommit()<CR>
+        nnoremap <F10> :call TortoiseSync()<CR>
+        amenu ToolBar.-sep8- <Nop>
+        amenu ToolBar.arrow_turn_right :call TortoiseCommit()<CR>
+        amenu ToolBar.arrow_refresh :call TortoiseSync()<CR>
+    endif
+endif
 
 set background=dark
 
 let mojo_highlight_data = 1
-au BufNewFile,BufRead Jenkinsfile setf groovy
