@@ -148,7 +148,9 @@ if has("gui_running")
         nnoremap <F10> :call TortoiseSync()<CR>
         amenu ToolBar.-sep8- <Nop>
         amenu ToolBar.arrow_turn_right :call TortoiseCommit()<CR>
+        tmenu ToolBar.arrow_turn_right	TortoiseGit Commit current file
         amenu ToolBar.arrow_refresh :call TortoiseSync()<CR>
+        tmenu ToolBar.arrow_refresh	TortoiseGit Sync
     endif
 endif
 
