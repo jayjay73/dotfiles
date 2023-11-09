@@ -1,0 +1,116 @@
+#!/usr/local/bin/bash
+#
+# vim: set foldmethod=marker:
+#
+# execute sudo after copying over MIT-magic-cookie
+# and making $SSH_AUTH_SOCK accessible.
+#
+# Author: Jan Jaeger
+#
+
+
+# {{{ Binaries
+which=$( which which )
+basename=$( which basename )
+xauth=$( ${which} xauth )
+id=$( $which id )
+sudo=$( $which sudo )
+id=$( $which id )
+setfacl=$( $which setfacl )
+# }}}
+
+# {{{ Functions
+usage() {
+    echo "$(${basename} $0): execute sudo after copying over MIT-magic-cookie and/or making \$SSH_AUTH_SOCK available."
+    echo "usage: $0 [-ax] [sudo options|command]"
+    echo "options:"
+    echo "-a        make current user's ssh auth socket accessible after sudo and create link to it."
+    echo "-x        copy over current user's MIT-magic-cookie."
+    echo "Options may only be given with ONE dash: -x, -ax, etc. All following options will be considered options to sudo."
+    echo "An example would be: xudo -a -iu ansible. Here -a is an option to xudo, -iu are options to sudo meaning perform"
+    echo "a login as user ansible."
+    exit 0
+}
+# }}}
+
+if [[ $# -eq 0 ]] ; then
+    usage
+    exit 0
+fi
+
+case $1 in
+    -a)
+    do_agent_forwarding="true"
+    shift
+    ;;
+    -x)
+    do_X_forwarding="true"
+    shift
+    ;;
+    -ax|-xa)
+    do_agent_forwarding="true"
+    do_X_forwarding="true"
+    shift
+    ;;
+    -h|-?)
+    usage
+    exit 0
+    ;;
+esac
+
+i=$(( $# - 1 ))
+while [[ ${i} -ge 0 ]] ; do
+    token=${BASH_ARGV[$i]}
+    #echo "i=$i: $token"
+    if [[ ${token} =~ ^-[a-zA-Z]*u ]] ; then
+        (( i-=1 ))
+        sudo_user=${BASH_ARGV[$i]}
+    fi
+    if [[ "x${token}" == "xsu" ]] ; then
+        if [[ "x${BASH_ARGV[0]}" == "x-" ]] || [[ ${i} -eq 0 ]] ; then
+            target_user="root"
+        elif ${id} ${BASH_ARGV[0]} >/dev/null 2>&1 ; then
+            target_user=${BASH_ARGV[0]}
+        fi
+        break
+    fi
+    (( --i ))
+done
+target_user=${target_user-${sudo_user}}
+target_user=${target_user-root}
+if ! ${id} ${target_user} >/dev/null 2>&1 ; then
+    "target user does not exist. exiting."
+    exit 1
+fi
+
+if [[ "x${do_X_forwarding}" == "xtrue" ]] ; then
+    cookie=$( ${xauth} list ${DISPLAY} )
+    ${sudo} -u ${target_user} -i ${xauth} add ${cookie} 2>/dev/null
+fi
+
+if [[ "x${do_agent_forwarding}" == "xtrue" && ! -z ${SSH_AUTH_SOCK} ]] ; then
+    ssh_auth_sock=${SSH_AUTH_SOCK}
+    target_user_ssh_auth_sock=${SSH_AUTH_SOCK}
+    if [[ $(uname) == "FreeBSD" ]] ; then
+        ${setfacl} -m u:${target_user}:rwxp::allow ${ssh_auth_sock}
+    else
+        ${setfacl} -m u:${target_user}:rwx ${ssh_auth_sock}
+    fi
+    sock_dir=$( dirname ${ssh_auth_sock} )
+    if [[ ! "x${sock_dir}" == "x${HOME}/.ssh" ]] ; then
+        if [[ $(uname) == "FreeBSD" ]] ; then
+            ${setfacl} -m u:${target_user}:rwxp::allow $( dirname ${ssh_auth_sock} )
+        else
+            ${setfacl} -m u:${target_user}:rwx $( dirname ${ssh_auth_sock} )
+        fi
+    fi
+fi
+
+# set PATH to something sane. Now, this should not be necessary,
+# except that sudo -i, unlike sudo su - or an actual login,  does 
+# NOT set /usr/local/bin in $PATH. Reason: /usr/local/bin does not 
+# appear anywhere in the usual login scripts. Where does it get set?
+# Nobody seems to know. This is highly idiotic.
+path_str="PATH=/usr/local/bin:/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/sbin"
+ssh_auth_sock_str="${target_user_ssh_auth_sock+SSH_AUTH_SOCK=${target_user_ssh_auth_sock}}"
+exec ${sudo} ${path_str} GIT_AUTHOR_EMAIL="${GIT_AUTHOR_EMAIL}" GIT_AUTHOR_NAME="${GIT_AUTHOR_NAME}" GIT_COMMITTER_EMAIL="${GIT_COMMITTER_EMAIL}" GIT_COMMITTER_NAME="${GIT_COMMITTER_NAME}" ${ssh_auth_sock_str} $*
