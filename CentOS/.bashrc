@@ -73,11 +73,11 @@ if [ "$color_prompt" = yes ]; then
     if [[ $UID -eq 0 ]] ; then
         #PS1='\[\033[01;31m\]\u\[\033[01;33m\]@\[\033[01;36m\]\h\[\033[00m\]:\[\033[01;94m\]\w\[\033[00m\]\$ '
         #PS1="${RED}\u${NORMAL}@${CYAN}\h:${BLUE}\w${NORMAL}$ "
-        PS1="${RED}${BOLD}\u${NORMAL}@${CYAN}${BOLD}\h${NORMAL}:${BLUE}${BOLD}\w${NORMAL}[${YELLOW}\$?${NORMAL}]\$ "
+        PS1="${RED}${BOLD}\u${NORMAL}@${CYAN}${BOLD}\h${NORMAL}:${BLUE}${BOLD}\w${NORMAL}[${YELLOW}\$?${NORMAL}]\\$ "
     else
         #PS1='\[\033[01;32m\]\u\[\033[01;33m\]@\[\033[01;36m\]\h\[\033[00m\]:\[\033[01;94m\]\w\[\033[00m\]\$ '
         #PS1="${GREEN}\u${NORMAL}@${CYAN}\h:${BLUE}\w${NORMAL}$ "
-        PS1="${GREEN}${BOLD}\u${NORMAL}@${CYAN}${BOLD}\h${NORMAL}:${BLUE}${BOLD}\w${NORMAL}[${YELLOW}\$?${NORMAL}]\$ "
+        PS1="${GREEN}${BOLD}\u${NORMAL}@${CYAN}${BOLD}\h${NORMAL}:${BLUE}${BOLD}\w${NORMAL}[${YELLOW}\$?${NORMAL}]\\$ "
     fi
     OS_VERSION=$( perl -n -e 'print $1 if /OracleLinux ([\S]+)/' /etc/motd )
     if [ -n "$OS_VERSION" ]; then
