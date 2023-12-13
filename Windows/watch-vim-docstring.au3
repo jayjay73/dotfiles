@@ -1,18 +1,26 @@
 #include <Misc.au3>
 #include <WinAPISys.au3>
 
-
 While True
+	While True
+		$hwnd_vim= WinActive("[REGEXPCLASS:KiTTY.*]")
+		If $hwnd_vim <> 0 Then ExitLoop
+		$hwnd_vim= WinActive("[REGEXPCLASS:ConsoleWindowClass.*]")
+		If $hwnd_vim <> 0 Then ExitLoop
+		$hwnd_vim= WinActive("[REGEXPCLASS:Vim.*]")
+		If $hwnd_vim <> 0 Then ExitLoop
 
-	$hwnd_vim= WinWaitActive("[REGEXPCLASS:KiTTY.*|WindowsForms10.*app.0.2bf8098_r13_ad1]")
-	;$keyboard_layout=_WinAPI_GetKeyboardLayout($hwnd_vim)
-	;if ( Hex($keyboard_layout, 4) <> "0409") Then
-	;	;if _IsPressed (11) Then
-	;	;	MsgBox(0, "hurray", "Keyboard: " & Hex($keyboard_layout, 4))
-	;	;EndIf
-	;	_WinAPI_SetKeyboardLayout($hwnd_vim, "0x0409")
-	;EndIf
-	$title= WinGetTitle("[ACTIVE]")
+		Sleep(100)
+	WEnd
+
+;~ 	$keyboard_layout=_WinAPI_GetKeyboardLayout($hwnd_vim)
+;~ 	if ( Hex($keyboard_layout, 4) <> "0409") Then
+;~ 	;	;if _IsPressed (11) Then
+;~ 	;	;	MsgBox(0, "hurray", "Keyboard: " & Hex($keyboard_layout, 4))
+;~ 	;	;EndIf
+;~ 		_WinAPI_SetKeyboardLayout($hwnd_vim, "0x0409")
+;~ 	EndIf
+	$title= WinGetTitle("[LAST]")
 	;MsgBox(0, "hurray", "Vim gefunden: " & $title)
 	If (StringInStr($title, "vimhelp")) Then
 		$pos= StringInStr($title, "vimhelp")
@@ -28,7 +36,7 @@ While True
 		Sleep(20)
 		WinActivate($hwnd_vim)
 	EndIf
-	Sleep(100)
+	Sleep(1000)
 
 WEnd
 
