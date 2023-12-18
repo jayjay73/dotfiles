@@ -79,10 +79,10 @@ if [ "$color_prompt" = yes ]; then
         #PS1="${GREEN}\u${NORMAL}@${CYAN}\h:${BLUE}\w${NORMAL}$ "
         PS1="${GREEN}${BOLD}\u${NORMAL}@${CYAN}${BOLD}\h${NORMAL}:${BLUE}${BOLD}\w${NORMAL}[${YELLOW}\$?${NORMAL}]\\$ "
     fi
-    OS_VERSION=$( perl -n -e 'print $1 if /OracleLinux ([\S]+)/' /etc/motd )
-    if [ -n "$OS_VERSION" ]; then
-        echo $PS1 | grep $OS_VERSION >/dev/null || PS1="${RED}${BOLD}${OS_VERSION}${NORMAL} ${PS1}"
-    fi
+    #OS_VERSION=$( perl -n -e 'print $1 if /OracleLinux ([\S]+)/' /etc/motd )
+    #if [ -n "$OS_VERSION" ]; then
+    #    echo $PS1 | grep $OS_VERSION >/dev/null || PS1="${RED}${BOLD}${OS_VERSION}${NORMAL} ${PS1}"
+    #fi
 else
     PS1='\u@\h:\w\$ '
 fi
@@ -132,11 +132,13 @@ alias vim='TERM=xterm vim -u ${HOME}/.vimrc'
 #    ;;
 #esac
 
-if [[ "x$TERM" == "xscreen" ]] ; then
+if [[ "x$TERM" == xscreen* ]] ; then
+    vimcmd=$(alias -p | grep vim | cut -d'=' -f2-)
+    vimcmd=${vimcmd:1:-1}
     # ...set the screen window title to user@host:dir
     PS1="\[\033k\w +\$numjobs\a\033\\\\\]$PS1"
     #echo -e '\033k'[$PWD]'\033\\'
-    trap 'export numjobs=$(jobs | wc -l); echo -ne \\033k$BASH_COMMAND\\033\\\\' DEBUG
+    trap 'export numjobs=$(jobs | wc -l); echo -ne \\033k${BASH_COMMAND//${vimcmd}/vim}\\033\\\\' DEBUG
     export PROMPT_COMMAND+=" ; _set_ssh_auth_sock"
 fi
 
